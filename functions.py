@@ -1,8 +1,11 @@
+import win32com.shell.shell as shell
 from ntplib import NTPClient
 from datetime import datetime
 from time import ctime, localtime, mktime
 from win32api import SetSystemTime
-from os import startfile
+from os import startfile, path
+from sys import argv, executable
+from sys import exit as sysexit
 from subprocess import Popen, PIPE, check_call
 
 
@@ -64,9 +67,14 @@ def count_delta():
 def set_server_time():
     """ установка серверного времени """
     # запрашиваем права админа чтобы выставить время
-    startfile('cmd.exe', 'runas')
     t = ServerTime().time_obj
     print(t)
+    ASADMIN = 'asadmin'
+    if argv[-1] != ASADMIN:
+        script = path.abspath(argv[0])
+        params = ' '.join([script] + argv[1:] + [ASADMIN])
+        shell.ShellExecuteEx(lpVerb='runas', lpFile=executable, lpParameters=params)
+        sysexit(0)
     SetSystemTime(t[0], t[1], t[6], t[2], t[3], t[4], t[5], 0)
 
 
@@ -118,3 +126,7 @@ class Alarm:
     def stop_sound(self):
         """ остановка звонка будильника """
         check_call("TASKKILL /F /PID {pid} /T".format(pid=self.process.pid))
+
+
+set_server_time()
+print('Мы еще живы!')
