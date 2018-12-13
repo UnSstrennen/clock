@@ -1,7 +1,7 @@
 from ntplib import NTPClient
 from datetime import datetime
-from time import ctime, localtime
-from urllib import request
+from time import ctime, localtime, strftime, sleep
+
 
 
 class ServerTime:
@@ -19,7 +19,9 @@ class ServerTime:
             try:
                 time_obj = localtime(self.client.request(host).tx_time)
                 if bool(time_obj):
-                    return [time_obj[2], time_obj[1], time_obj[0], time_obj[3], time_obj[4], time_obj[5]]
+                    return {'day': time_obj[2], 'month': time_obj[1], 'year': time_obj[0],
+                            'hours': time_obj[3], 'minutes': time_obj[4], 'seconds': time_obj[5],
+                            'day of week': time_obj[6]}
             except Exception:
                 pass
 
@@ -27,4 +29,5 @@ class ServerTime:
 def get_local_time():
     """ returns the time on machine """
     t = datetime.now()
-    return [t.day, t.month, t.year, t.hour, t.minute, t.second, t.microsecond]
+    return {'day': t.day, 'month': t.month, 'year': t.year, 'hours': t.hour,
+            'minutes': t.minute, 'seconds': t.second, 'microseconds': t.microsecond}
