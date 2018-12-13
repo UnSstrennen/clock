@@ -27,5 +27,3 @@ def get_local_time():
     """ returns the time on machine """
     t = datetime.now()
     return [t.day, t.month, t.year, t.hour, t.minute, t.second, t.microsecond]
-
-ServerTime()
