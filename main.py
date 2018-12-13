@@ -23,6 +23,7 @@ class ServerTime:
             except Exception:
                 pass
 
+
 def get_local_time():
     """ returns the time on machine """
     t = datetime.now()
