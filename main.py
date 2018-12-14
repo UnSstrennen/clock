@@ -65,3 +65,40 @@ def set_server_time():
     t = ServerTime().time_obj
     print(t)
     SetSystemTime(t[0], t[1], t[6], t[2], t[3], t[4], t[5], 0)
+
+
+class Alarm:
+    def __init__(self, hours, minutes):
+        self.minutes = minutes
+        self.hours = hours
+        self.tracked = True
+
+    def set(self, hours, minutes):
+        """ изменение настроек будильника """
+        self.minutes = minutes
+        self.hours = hours
+
+    def start(self):
+        """ запуск будильника """
+        self.tracked = True
+
+    def stop(self):
+        """ остановка будильника """
+        self.tracked = False
+
+    def is_working(self):
+        """ возвращает текущее состояние будильника (bool)"""
+        return self.tracked
+
+    def check(self):
+        """ проверяет, пора ли звонить. Возвращает True, если самое время (bool) """
+        local_hours = get_local_time()['hours']
+        local_minutes = get_local_time()['minutes']
+        if local_hours == self.hours and local_minutes == local_minutes:
+            return True
+        else:
+            return False
+
+    def alarm(self):
+        """ делает вид, что он - будильник """
+        self.tracked = False
