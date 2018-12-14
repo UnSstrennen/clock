@@ -1,0 +1,2 @@
+win32api (conda included)
+ntplib (external)
