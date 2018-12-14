@@ -61,6 +61,8 @@ def count_delta():
 
 
 def set_server_time():
+    """ установка серверного времени """
+    """ установка серверного времени """
     # запрашиваем права админа чтобы выставить время
     startfile('cmd.exe', 'runas')
     t = ServerTime().time_obj
