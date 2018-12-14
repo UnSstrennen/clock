@@ -3,6 +3,7 @@ from datetime import datetime
 from time import ctime, localtime, mktime
 from win32api import SetSystemTime
 from os import startfile
+from mp3play import load
 
 
 class ServerTime:
@@ -72,6 +73,7 @@ class Alarm:
         self.minutes = minutes
         self.hours = hours
         self.tracked = True
+        self.mp3 = None
 
     def set(self, hours, minutes):
         """ изменение настроек будильника """
@@ -102,3 +104,10 @@ class Alarm:
     def alarm(self):
         """ делает вид, что он - будильник """
         self.tracked = False
+        filename = r'1.mp3'
+        self.mp3 = load(filename)
+        self.mp3.play()
+
+    def stop(self):
+        """ останавливает звук будильника """
+        self.mp3.stop()
