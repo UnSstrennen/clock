@@ -104,7 +104,7 @@ class Alarm:
     def alarm(self):
         """ делает вид, что он - будильник """
         self.tracked = False
-        filename = r'1.mp3'
+        filename = '1.mp3'
         self.mp3 = load(filename)
         self.mp3.play()
 
