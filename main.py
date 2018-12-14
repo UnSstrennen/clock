@@ -2,6 +2,7 @@ from ntplib import NTPClient
 from datetime import datetime
 from time import ctime, localtime, mktime
 from win32api import SetSystemTime
+from os import startfile
 
 
 class ServerTime:
@@ -56,3 +57,11 @@ def count_delta():
         hours = 0
     microseconds = delta.microseconds
     return {'days': days, 'hours': hours, 'minutes': minutes, 'seconds': seconds, 'microseconds': microseconds}
+
+
+def set_server_time():
+    # запрашиваем права админа чтобы выставить время
+    startfile('cmd.exe', 'runas')
+    t = ServerTime().time_obj
+    print(t)
+    SetSystemTime(t[0], t[1], t[6], t[2], t[3], t[4], t[5], 0)
