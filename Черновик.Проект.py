@@ -9,57 +9,70 @@ import json
 class Example(QWidget):
     def __init__(self):
         super().__init__()
+        self.unitUI()
+
+    def unitUI(self):
         with open('cfg.json') as f:
             self.cfg_dict = json.loads(f.read())
         self.name_file = self.cfg_dict['background_image']
-        self.color_frame = [0, 0, 0]
-
+        self.color_frame = (0, 0, 0)
+        self.old_pos = None
 
         # Генерация окна
-        self.setWindowTitle('Example')
+        self.setWindowTitle('Clock')
         self.setGeometry(260, 160, 260, 160)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setObjectName('MainWidget')
-        self.setStyleSheet("#MainWidget {background-color: #272727;}")
+        self.setStyleSheet("#MainWidget {background-color: #272727;} QLabel {color: white}")
 
         # Кнопка закрытие окна
-        self.btn = QPushButton(self, clicked=self.close)
-        self.btn.setIcon(QtGui.QIcon(QtGui.QPixmap('cross.png')))
-        self.btn.setFlat(True)
-        self.btn.resize(15, 15)
-        self.btn.move(242, 3)
+        self.btn_close = QPushButton(self, clicked=self.close)
+        self.btn_close.setIcon(QtGui.QIcon(QtGui.QPixmap('cross.png')))
+        self.btn_close.setFlat(True)
+        self.btn_close.resize(17, 17)
+        self.btn_close.move(242, 1)
 
         # Кнопка в settings
-        self.btn2 = QPushButton(self, clicked=self.settings)
-        self.btn2.setIcon(QtGui.QIcon(QtGui.QPixmap('sh.gif')))
-        self.btn2.setFlat(True)
-        self.btn2.resize(20, 20)
-        self.btn2.move(1, 1)
-        self.btn2.show()
+        self.btn_stngs = QPushButton(self, clicked=self.settings)
+        self.btn_stngs.setIcon(QtGui.QIcon(QtGui.QPixmap('sh.gif')))
+        self.btn_stngs.setFlat(True)
+        self.btn_stngs.resize(20, 20)
+        self.btn_stngs.move(1, 1)
+        self.btn_stngs.show()
 
-        #Кнопка возрата в general
-        self.btn3 = QPushButton(self, clicked=self.general)
-        self.btn3.setIcon(QtGui.QIcon(QtGui.QPixmap('st.gif')))
-        self.btn3.setFlat(True)
-        self.btn3.resize(20, 20)
-        self.btn3.move(2, 2)
+        # Кнопка возрата в general
+        self.btn_in_gen = QPushButton(self, clicked=self.general)
+        self.btn_in_gen.setIcon(QtGui.QIcon(QtGui.QPixmap('st.gif')))
+        self.btn_in_gen.setFlat(True)
+        self.btn_in_gen.resize(18, 18)
+        self.btn_in_gen.move(1, 1)
+
+        # Надпись SETTINGS
+        self.label = QLabel('SETTINGS', self)
+        self.label.setGeometry(10, 10, 100, 50)
 
         self.general()
 
+    # Сцена часов
     def general(self):
         self.background_image()
         try:
-            self.btn3.hide()
+            self.btn_in_gen.hide()
             self.label.hide()
-        except:
+            self.btn_palette.hide()
+            self.btn_stngs.show()
+        except AttributeError:
             pass
 
+    # Сцена настроек
     def settings(self):
-        self.btn2.hide()
-        self.btn3.show()
-        self.label = QLabel('SETTINGS', self)
-        self.label.setGeometry(10, 10, 100, 50)
-        self.label.QColor(0, 255, 0)
+        self.btn_stngs.hide()
+        self.btn_in_gen.show()
+        # Кнопка вызова палитры
+        self.btn_palette = QPushButton('Палитра', self, clicked=self.palette)
+        self.btn_palette.resize(55, 20)
+        self.btn_palette.move(60, 20)
+        self.btn_palette.show()
         self.label.show()
 
     # Изменение фона окна
@@ -70,13 +83,13 @@ class Example(QWidget):
             self.paintEvent(self, clr=self.hex_to_rgb(color.name()), palette_call=True)
 
     # рисование окна
-    def paintEvent(self, event: QtGui.QPaintEvent, clr=[255, 255, 255], palette_call=False):
+    def paintEvent(self, event: QtGui.QPaintEvent, clr=(255, 0, 0), palette_call=False):
         if palette_call:
             self.color_frame = clr
         painter = QtGui.QPainter(self)
-        painter.setPen(QtGui.QPen(QtGui.QColor(fabs(self.color_frame[0] - 70),
-                                               fabs(self.color_frame[1] - 70),
-                                               fabs(self.color_frame[2] - 70)), 2))
+        painter.setPen(QtGui.QPen(QtGui.QColor(int(fabs(self.color_frame[0] - 75)),
+                                               int(fabs(self.color_frame[1] - 75)),
+                                               int(fabs(self.color_frame[2] - 75))), 2))
         painter.drawRect(self.rect())
 
     # нужна для перемещёния окна
@@ -95,8 +108,9 @@ class Example(QWidget):
     def hex_to_rgb(self, value):
         value = value.lstrip('#')
         lv = len(value)
-        return [int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3)]
+        return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
 
+    # Установка фонового изображения
     def background_image(self):
         hbox = QHBoxLayout(self)
         pixmap = QtGui.QPixmap(self.name_file)
