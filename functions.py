@@ -12,6 +12,7 @@ class ServerTime:
         self.hosts = ['ntp1.stratum2.ru', 'ntp2.stratum2.ru', 'pool.ntp.org']
         self.client = NTPClient()
         self.get_time()
+        self.time_obj = None
 
     def print_time(self):
         """ prints the server time """
