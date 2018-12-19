@@ -118,9 +118,3 @@ class Alarm:
     def stop_sound(self):
         """ остановка звонка будильника """
         self.process.kill()
-
-
-x = Alarm(10,11)
-x.start_sound()
-sleep(1)
-x.stop_sound()
