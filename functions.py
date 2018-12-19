@@ -4,7 +4,6 @@ from time import ctime, localtime, mktime
 from win32api import SetSystemTime
 from os import startfile
 from subprocess import Popen, PIPE, check_call
-from time import sleep
 # следующая конструкция нужна, чтобы не выводился текст при импорте модуля pygame
 from contextlib import redirect_stdout as r_s
 with r_s(None):
@@ -123,9 +122,3 @@ class Alarm:
     def stop_sound(self):
         """ остановка звонка будильника """
         check_call("TASKKILL /F /PID {pid} /T".format(pid=self.process.pid))
-
-
-x = Alarm(1,1)
-x.start_sound(1)
-sleep(2)
-x.stop_sound()
