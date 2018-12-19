@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QPushButton, QColorDialog, QMainWindow
+from PyQt5.QtWidgets import QApplication, QPushButton, QColorDialog, QMainWindow, QComboBox
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
 from math import fabs
@@ -9,6 +9,7 @@ import json
 class Example(QMainWindow):
     def __init__(self):
         super(Example, self).__init__()
+        self.setWindowIcon(QtGui.QIcon('icon.png'))
         with open('cfg.json') as f:
             self.cfg_dict = json.loads(f.read())
         self.name_file = self.cfg_dict['background_image']
@@ -17,7 +18,7 @@ class Example(QMainWindow):
 
         # Генерация окна
         self.setWindowTitle('Clock')
-        self.setGeometry(260, 160, 260, 160)
+        self.setGeometry(0, 740, 260, 160)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setObjectName('MainWidget')
         self.setStyleSheet("#MainWidget {background-color: #272727;}")
@@ -32,16 +33,11 @@ class Example(QMainWindow):
 
         # Кнопка возрата в general
         self.btn_gn = QPushButton(self, clicked=self.general)
-        self.btn_gn.setIcon(QtGui.QIcon(QtGui.QPixmap('back2.png')))
+        self.btn_gn.setIcon(QtGui.QIcon(QtGui.QPixmap('back.png')))
         self.btn_gn.setFlat(True)
         self.btn_gn.resize(20, 20)
         self.btn_gn.move(1, 1)
         self.btn_gn.show()
-
-        # Кнопка вызова палитры
-        self.btn_palette = QPushButton('Палитра', self, clicked=self.palette)
-        self.btn_palette.resize(55, 20)
-        self.btn_palette.move(60, 20)
 
         # Кнопка входа в settings
         self.btn_st = QPushButton(self, clicked=self.settings)
@@ -51,6 +47,15 @@ class Example(QMainWindow):
         self.btn_st.move(3, 3)
         self.btn_st.show()
 
+        # Комбобокс для стилизации
+        self.combo = QComboBox(self)
+        self.combo.setObjectName('Combo')
+        self.combo.resize(75, 20)
+        self.combo.addItems(["Stylization", "Color", "OLDS",
+                             "Backdrop2", "Backdrop3", "Backdrop4"])
+        self.combo.activated[str].connect(self.onActivated)
+        self.combo.move(30, 30)
+
         self.general()
 
     # Сцена часов
@@ -58,8 +63,8 @@ class Example(QMainWindow):
         self.background_image()
         try:
             self.btn_st.show()
-            self.btn_palette.hide()
             self.btn_gn.hide()
+            self.combo.hide()
         except AttributeError:
             pass
 
@@ -67,9 +72,7 @@ class Example(QMainWindow):
     def settings(self):
         self.btn_gn.show()
         self.btn_st.hide()
-        self.btn_palette.show()
-
-        # добавить изменение картинки-фона окна QComboBox https://pythonworld.ru/gui/pyqt5-widgets2.html
+        self.combo.show()
 
     # Изменение фона окна
     def palette(self):
@@ -79,7 +82,7 @@ class Example(QMainWindow):
             self.paintEvent(self, clr=self.hex_to_rgb(color.name()), palette_call=True)
 
     # рисование окна
-    def paintEvent(self, event: QtGui.QPaintEvent, clr=(255, 0, 0), palette_call=False):
+    def paintEvent(self, event: QtGui.QPaintEvent, clr=(255, 255, 255), palette_call=False):
         if palette_call:
             self.color_frame = clr
         painter = QtGui.QPainter(self)
@@ -109,6 +112,14 @@ class Example(QMainWindow):
     # Установка фонового изображения
     def background_image(self):
         pass
+
+    def onActivated(self, val):
+        backgrounds = {'OLDS': 'olds.jpg', 'Backdrop2': 'Фон.png', 'Backdrop3': '', 'Backdrop4': ''}
+        if val == 'Color':
+            self.palette()
+        elif val not in ('Color', 'Stylization'):
+            self.setStyleSheet("#MainWidget {background-image: url(%s);}" % backgrounds[val])
+            self.paintEvent(self)
 
 
 if __name__ == '__main__':
