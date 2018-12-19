@@ -3,6 +3,8 @@ from datetime import datetime
 from time import ctime, localtime, mktime
 from win32api import SetSystemTime
 from os import startfile
+from subprocess import Popen, PIPE
+from time import sleep
 # следующая конструкция нужна, чтобы не выводился текст при импорте модуля pygame
 from contextlib import redirect_stdout as r_s
 with r_s(None):
@@ -77,7 +79,8 @@ class Alarm:
         self.minutes = minutes
         self.hours = hours
         self.tracked = False
-        self.sounds = ['1.mp3', '2.mp3', '3.mp3']  # звуки будильника
+        self.track = 0  # индекс мелодии
+        self.process = None  # будущий процесс обработки звука
         pygame.init()
 
     def set(self, hours, minutes):
@@ -110,14 +113,14 @@ class Alarm:
         """ будильник начинает звонить """
         # лучше перепроверить
         self.tracked = False
-        for sound in self.sounds:
-            try:
-                pygame.mixer.music.load(sound)
-                break
-            except Exception:
-                pass
-        pygame.mixer.music.play()
+        self.process = Popen("python sound.py " + str(self.track), stdout=PIPE, shell=True)
 
     def stop_sound(self):
         """ остановка звонка будильника """
-        pygame.mixer.music.stop()
+        self.process.kill()
+
+
+x = Alarm(10,11)
+x.start_sound()
+sleep(1)
+x.stop_sound()
