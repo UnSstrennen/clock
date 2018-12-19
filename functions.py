@@ -4,10 +4,6 @@ from time import ctime, localtime, mktime
 from win32api import SetSystemTime
 from os import startfile
 from subprocess import Popen, PIPE, check_call
-# следующая конструкция нужна, чтобы не выводился текст при импорте модуля pygame
-from contextlib import redirect_stdout as r_s
-with r_s(None):
-    import pygame
 
 
 class ServerTime:
@@ -80,7 +76,6 @@ class Alarm:
         self.tracked = False
         self.track = 0  # индекс мелодии
         self.process = None  # будущий процесс обработки звука
-        pygame.init()
 
     def set(self, hours, minutes):
         """ изменение настроек будильника """
