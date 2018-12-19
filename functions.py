@@ -3,7 +3,7 @@ from datetime import datetime
 from time import ctime, localtime, mktime
 from win32api import SetSystemTime
 from os import startfile
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, check_call
 from time import sleep
 # следующая конструкция нужна, чтобы не выводился текст при импорте модуля pygame
 from contextlib import redirect_stdout as r_s
@@ -109,12 +109,23 @@ class Alarm:
         else:
             return False
 
-    def start_sound(self):
+    def start_sound(self, *args):
         """ будильник начинает звонить """
         # лучше перепроверить
         self.tracked = False
+
+        # если нужно проиграть другой звук будильника - подстраиваемся
+        if args:
+            self.track = args[0]
+
         self.process = Popen("python sound.py " + str(self.track), stdout=PIPE, shell=True)
 
     def stop_sound(self):
         """ остановка звонка будильника """
-        self.process.kill()
+        check_call("TASKKILL /F /PID {pid} /T".format(pid=self.process.pid))
+
+
+x = Alarm(1,1)
+x.start_sound(1)
+sleep(2)
+x.stop_sound()
