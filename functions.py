@@ -3,7 +3,11 @@ from datetime import datetime
 from time import ctime, localtime, mktime
 from win32api import SetSystemTime
 from os import startfile
-from mp3play import load
+from subprocess import Popen, PIPE, check_call
+# следующая конструкция нужна, чтобы не выводился текст при импорте модуля pygame
+from contextlib import redirect_stdout as r_s
+with r_s(None):
+    import pygame
 
 
 class ServerTime:
@@ -73,8 +77,10 @@ class Alarm:
     def __init__(self, hours, minutes):
         self.minutes = minutes
         self.hours = hours
-        self.tracked = True
-        self.mp3 = None
+        self.tracked = False
+        self.track = 0  # индекс мелодии
+        self.process = None  # будущий процесс обработки звука
+        pygame.init()
 
     def set(self, hours, minutes):
         """ изменение настроек будильника """
@@ -102,13 +108,17 @@ class Alarm:
         else:
             return False
 
-    def alarm(self):
-        """ делает вид, что он - будильник """
+    def start_sound(self, *args):
+        """ будильник начинает звонить """
+        # лучше перепроверить
         self.tracked = False
-        filename = '1.mp3'
-        self.mp3 = load(filename)
-        self.mp3.play()
 
-    def stop(self):
-        """ останавливает звук будильника """
-        self.mp3.stop()
+        # если нужно проиграть другой звук будильника - подстраиваемся
+        if args:
+            self.track = args[0]
+
+        self.process = Popen("python sound.py " + str(self.track), stdout=PIPE, shell=True)
+
+    def stop_sound(self):
+        """ остановка звонка будильника """
+        check_call("TASKKILL /F /PID {pid} /T".format(pid=self.process.pid))
