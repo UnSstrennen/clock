@@ -3,7 +3,10 @@ from datetime import datetime
 from time import ctime, localtime, mktime
 from win32api import SetSystemTime
 from os import startfile
-from mp3play import load
+# следующая конструкция нужна, чтобы не выводился текст при импорте модуля pygame
+from contextlib import redirect_stdout as r_s
+with r_s(None):
+    import pygame
 
 
 class ServerTime:
@@ -73,8 +76,9 @@ class Alarm:
     def __init__(self, hours, minutes):
         self.minutes = minutes
         self.hours = hours
-        self.tracked = True
-        self.mp3 = None
+        self.tracked = False
+        self.sounds = ['1.mp3', '2.mp3', '3.mp3']  # звуки будильника
+        pygame.init()
 
     def set(self, hours, minutes):
         """ изменение настроек будильника """
@@ -102,13 +106,18 @@ class Alarm:
         else:
             return False
 
-    def alarm(self):
-        """ делает вид, что он - будильник """
+    def start_sound(self):
+        """ будильник начинает звонить """
+        # лучше перепроверить
         self.tracked = False
-        filename = '1.mp3'
-        self.mp3 = load(filename)
-        self.mp3.play()
+        for sound in self.sounds:
+            try:
+                pygame.mixer.music.load(sound)
+                break
+            except Exception:
+                pass
+        pygame.mixer.music.play()
 
-    def stop(self):
-        """ останавливает звук будильника """
-        self.mp3.stop()
+    def stop_sound(self):
+        """ остановка звонка будильника """
+        pygame.mixer.music.stop()
