@@ -2,6 +2,7 @@ from ntplib import NTPClient
 from datetime import datetime
 from time import ctime, localtime, mktime
 from subprocess import Popen, PIPE, check_call
+from datetime import datetime, timedelta, timezone
 
 
 class ServerTime:
@@ -11,7 +12,7 @@ class ServerTime:
         self.client = NTPClient()
         self.time_obj = None
         self.get_time()
-        self.TIMEZONE = 3
+        self.TIMEZONE = datetime.now(timezone.utc).astimezone().utcoffset() // timedelta(seconds=1) // 3600
 
     def print_time(self):
         """ prints the server time """
