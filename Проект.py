@@ -82,7 +82,7 @@ class Alarm:
         """ проверяет, пора ли звонить. Возвращает True, если самое время (bool) """
         local_hours = hours
         local_minutes = minutes
-        if local_hours == self.hours and local_minutes == local_minutes:
+        if local_hours == self.hours and local_minutes == self.minutes:
             return True
         else:
             return False
@@ -109,15 +109,18 @@ class Example(QMainWindow):
         super(Example, self).__init__()
         self.tmr = QTimer()
         self.tmr.timeout.connect(self.on_timer)
-        self.alarm_class = Alarm(0,0)
+        self.alarm_class = Alarm(0, 0)
+        self.status = False
+        self.h_m_list = [None, None]
         self.initUI()
+
 
     def initUI(self):
         self.color_frame = (0, 0, 0)
         self.old_pos = None
         self.text = ['00', '00']
-        self.status = False
-        self.h_m_list = [None, None]
+
+
 
         # Генерация окна
         self.setWindowTitle('Clock')
@@ -151,12 +154,12 @@ class Example(QMainWindow):
         self.btn_st.show()
 
         # Кнопка будильника
-        self.alarm = QPushButton(self, clicked=self.alarm_st)
-        self.alarm.setIcon(QtGui.QIcon(QtGui.QPixmap("alarmN.png")))
-        self.alarm.setFlat(True)
-        self.alarm.resize(25, 25)
-        self.alarm.move(204, 39)
-        self.alarm.show()
+        self.alarmB = QPushButton(self, clicked=self.alarm_st)
+        self.alarmB.setIcon(QtGui.QIcon(QtGui.QPixmap("alarmN.png")))
+        self.alarmB.setFlat(True)
+        self.alarmB.resize(25, 25)
+        self.alarmB.move(204, 39)
+        self.alarmB.show()
 
         # Кнопка включения будильника
         self.alVKL = QPushButton('Включить', self, clicked=self.alarm_status)
@@ -212,6 +215,13 @@ class Example(QMainWindow):
         self.combo.activated[str].connect(self.onActivated)
         self.combo.move(30, 30)
 
+        # Кнопка отключения будильника
+        self.gm = QPushButton('ОТКЛЮЧИТЬ\nБУДИЛЬНИК', self, clicked=self.play_stop)
+        self.gm.setObjectName('x')
+        self.gm.setStyleSheet("#x {background-color: white; border-radius: 2px;}")
+        self.gm.resize(90, 50)
+        self.gm.move(120, 28)
+
         self.general()
 
     # Сцена часов
@@ -220,13 +230,14 @@ class Example(QMainWindow):
             self.btn_st.show()
             self.btn_gn.hide()
             self.combo.hide()
-            self.alarm.show()
+            self.alarmB.show()
             self.lcd.show()
             self.sldH.hide()
             self.sldM.hide()
             self.lcdA.hide()
             self.alVKL.hide()
             self.sinT.hide()
+            self.gm.hide()
         except AttributeError:
             pass
 
@@ -235,24 +246,43 @@ class Example(QMainWindow):
         self.btn_gn.show()
         self.btn_st.hide()
         self.combo.show()
-        self.alarm.hide()
+        self.alarmB.hide()
         self.lcd.hide()
         self.sldH.hide()
         self.sldM.hide()
         self.lcdA.hide()
         self.alVKL.hide()
         self.sinT.show()
+        self.gm.hide()
 
     def alarm_st(self):
         self.btn_gn.show()
         self.btn_st.hide()
-        self.alarm.hide()
+        self.alarmB.hide()
         self.lcd.hide()
         self.sldH.show()
         self.sldM.show()
         self.lcdA.show()
         self.alVKL.show()
         self.sinT.hide()
+
+    def good_morning(self):
+        self.gm.show()
+        self.btn_gn.hide()
+        self.btn_st.hide()
+        self.alarmB.hide()
+        self.lcd.hide()
+        self.sldH.hide()
+        self.sldM.hide()
+        self.lcdA.hide()
+        self.alVKL.hide()
+        self.sinT.hide()
+
+    def play_stop(self):
+        self.alarm_class.stop_sound()
+        self.alarm_status()
+        self.general()
+
 
     # Изменение фона окна
     def palette(self):
@@ -318,16 +348,14 @@ class Example(QMainWindow):
         self.lcd.display(make_time_for_lcd())
         if self.status:
             time = get_local_time()
-            if self.alarm_class.check(time['hours'], time['minutes']):
+            if self.alarm_class .check(time['hours'], time['minutes']):
                 self.alarm_class.start_sound()
                 self.good_morning()
-                self.alarm_class.stop_sound()
-                self.alarm_status()
 
     def alarm_status(self):
         if not self.status:
             self.status = True
-            self.alarm.setIcon(QtGui.QIcon(QtGui.QPixmap("alarmA.png")))
+            self.alarmB.setIcon(QtGui.QIcon(QtGui.QPixmap("alarmA.png")))
             self.alVKL.setText('Выключить')
             self.alarm_class.set(self.h_m_list[0], self.h_m_list[1])
         elif self.status:
