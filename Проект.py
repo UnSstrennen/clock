@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import (QApplication, QPushButton, QColorDialog,
                              QMainWindow, QComboBox, QLCDNumber, QSlider)
 from PyQt5 import QtGui
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 from math import fabs
 from time import sleep, time
 
@@ -13,6 +13,8 @@ from functions import ServerTime, get_local_time
 class Example(QMainWindow):
     def __init__(self):
         super(Example, self).__init__()
+        self.tmr = QTimer()
+        self.tmr.timeout.connect(self.on_timer)
         self.initUI()
         
     def initUI(self):
@@ -101,7 +103,6 @@ class Example(QMainWindow):
         self.combo.move(30, 30)
 
         self.general()
-        self.show()
 
     # Сцена часов
     def general(self):
@@ -194,6 +195,10 @@ class Example(QMainWindow):
         self.text[1] = str(n)
         self.lcdA.display(':'.join(self.text))
 
+    def on_timer(self):
+        """ it happpens when timer calls it """
+        self.lcd.display(make_time_for_lcd())
+
 
 def make_time_for_lcd():
     """ makes the time data compatible for lcd widget """
@@ -211,5 +216,9 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     w = Example()
+
+    TIMER_PERIOD = 20  # period in milliseconds
+    w.tmr.start(TIMER_PERIOD)
+    w.show()
 
     sys.exit(app.exec_())
