@@ -360,7 +360,7 @@ class Example(QMainWindow):
             self.alarm_class.set(self.h_m_list[0], self.h_m_list[1])
         elif self.status:
             self.status = False
-            self.alarm.setIcon(QtGui.QIcon(QtGui.QPixmap("alarmN.png")))
+            self.alarmB.setIcon(QtGui.QIcon(QtGui.QPixmap("alarmN.png")))
             self.alVKL.setText('Включить')
             self.h_m_list = [None, None]
         self.alarm_class.tracked = self.status
