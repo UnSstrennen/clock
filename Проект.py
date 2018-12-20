@@ -13,7 +13,9 @@ from functions import ServerTime, get_local_time
 class Example(QMainWindow):
     def __init__(self):
         super(Example, self).__init__()
-        self.setWindowIcon(QtGui.QIcon('icon.png'))
+        self.initUI()
+        
+    def initUI(self)
         self.color_frame = (0, 0, 0)
         self.old_pos = None
         self.text = ['00', '00']
