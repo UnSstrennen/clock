@@ -270,6 +270,7 @@ class Example(QMainWindow):
                 # тут ждем пока не нажмут кнопку
                 # тут заканчиваем звук
                 self.alarm_class.stop_sound()
+                self.alarm_status()
 
     def alarm_status(self):
         if not self.status:
