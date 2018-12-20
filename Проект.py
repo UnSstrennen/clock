@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (QApplication, QPushButton, QColorDialog,
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
 from math import fabs
-from time import sleep
+from time import sleep, time
 
 
 from functions import ServerTime, get_local_time
@@ -15,7 +15,7 @@ class Example(QMainWindow):
         super(Example, self).__init__()
         self.initUI()
         
-    def initUI(self)
+    def initUI(self):
         self.color_frame = (0, 0, 0)
         self.old_pos = None
         self.text = ['00', '00']
@@ -101,6 +101,7 @@ class Example(QMainWindow):
         self.combo.move(30, 30)
 
         self.general()
+        self.show()
 
     # Сцена часов
     def general(self):
@@ -210,11 +211,5 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     w = Example()
-    w.show()
-
-    while True:
-        sleep(1)
-        w.lcd.display(make_time_for_lcd())
-
 
     sys.exit(app.exec_())
