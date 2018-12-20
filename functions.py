@@ -119,6 +119,3 @@ class Alarm:
     def stop_sound(self):
         """ остановка звонка будильника """
         check_call("TASKKILL /F /PID {pid} /T".format(pid=self.process.pid))
-
-
-set_server_time()
