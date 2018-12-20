@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import (QApplication, QPushButton, QColorDialog,
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
 from math import fabs
+from time import sleep
 
 
 from functions import ServerTime, get_local_time
@@ -19,7 +20,7 @@ class Example(QMainWindow):
 
         # Генерация окна
         self.setWindowTitle('Clock')
-        self.setGeometry(0, 740, 260, 160)
+        self.setGeometry(0, 0, 260, 160)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setObjectName('MainWidget')
         self.setStyleSheet("#MainWidget {background-color: #272727;}")
@@ -84,14 +85,7 @@ class Example(QMainWindow):
         self.lcd.resize(150, 75)
         self.lcd.setSegmentStyle(QLCDNumber.Flat)
         self.lcd.move(55, 40)
-        time = get_local_time()
-        hours = str(time['hours'])
-        minutes = str(time['minutes'])
-        if len(hours) == 1:
-            hours = '0' + hours
-        if len(minutes) == 1:
-            minutes = '0' + minutes
-        self.lcd.display(hours + ':' + minutes)
+        self.lcd.display(make_time_for_lcd())
         self.lcd.setObjectName("LCD")
         self.lcd.setStyleSheet("#LCD {background-image: url(фон.png); border: 2px solid #4c4c4c;}")
 
@@ -198,10 +192,27 @@ class Example(QMainWindow):
         self.lcdA.display(':'.join(self.text))
 
 
+def make_time_for_lcd():
+    """ makes the time data compatible for lcd widget """
+    time = get_local_time()
+    hours = str(time['hours'])
+    minutes = str(time['minutes'])
+    if len(hours) == 1:
+        hours = '0' + hours
+    if len(minutes) == 1:
+        minutes = '0' + minutes
+    return hours + ':' + minutes
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     w = Example()
     w.show()
+
+    while True:
+        sleep(1)
+        w.lcd.display(make_time_for_lcd())
+
 
     sys.exit(app.exec_())
