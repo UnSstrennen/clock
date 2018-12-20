@@ -4,9 +4,60 @@ from PyQt5.QtWidgets import (QApplication, QPushButton, QColorDialog,
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, QTimer
 from math import fabs
+from subprocess import Popen, PIPE, check_call
 from time import sleep, time
 
-from functions import ServerTime, get_local_time, Alarm
+from functions import ServerTime, get_local_time
+
+class Alarm:
+    def __init__(self, hours, minutes):
+        self.minutes = minutes
+        self.hours = hours
+        self.tracked = False
+        self.track = 0  # индекс мелодии
+        self.process = None  # будущий процесс обработки звука
+
+    def set(self, hours, minutes):
+        """ изменение настроек будильника """
+        self.minutes = minutes
+        self.hours = hours
+
+    def start(self):
+        """ запуск будильника """
+        self.tracked = True
+
+    def stop(self):
+        """ остановка будильника """
+        self.tracked = False
+
+    def is_working(self):
+        """ возвращает текущее состояние будильника (bool)"""
+        return self.tracked
+
+    def check(self, hours, minutes):
+        """ проверяет, пора ли звонить. Возвращает True, если самое время (bool) """
+        local_hours = hours
+        local_minutes = minutes
+        if local_hours == self.hours and local_minutes == local_minutes:
+            return True
+        else:
+            return False
+
+    def start_sound(self, *args):
+        """ будильник начинает звонить """
+        # лучше перепроверить
+        self.tracked = False
+
+        # если нужно проиграть другой звук будильника - подстраиваемся
+        if args:
+            self.track = args[0]
+
+        self.process = Popen("python sound.py " + str(self.track), stdout=PIPE, shell=True)
+
+    def stop_sound(self):
+        """ остановка звонка будильника """
+        check_call("TASKKILL /F /PID {pid} /T".format(pid=self.process.pid))
+
 
 
 class Example(QMainWindow):
@@ -14,6 +65,7 @@ class Example(QMainWindow):
         super(Example, self).__init__()
         self.tmr = QTimer()
         self.tmr.timeout.connect(self.on_timer)
+        self.alarm_class = Alarm(0,0)
         self.initUI()
 
     def initUI(self):
@@ -217,11 +269,13 @@ class Example(QMainWindow):
             self.status = True
             self.alarm.setIcon(QtGui.QIcon(QtGui.QPixmap("alarmA.png")))
             self.alVKL.setText('Выключить')
+            self.alarm_class.set(self.h_m_list[0], self.h_m_list[1])
         elif self.status:
             self.status = False
             self.alarm.setIcon(QtGui.QIcon(QtGui.QPixmap("alarmN.png")))
             self.alVKL.setText('Включить')
             self.h_m_list = [None, None]
+        self.alarm_class.tracked = self.status
 
 
 def make_time_for_lcd():
