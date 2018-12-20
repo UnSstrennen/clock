@@ -45,20 +45,8 @@ def count_delta():
     server = datetime.fromtimestamp(mktime(ServerTime().time_obj))
     local = datetime.now()
     delta = server - local
-    days = delta.days
     seconds = delta.seconds
-    if seconds >= 60:
-        minutes = seconds // 60
-        seconds -= minutes * 60
-    else:
-        minutes = 0
-    if minutes >= 60:
-        hours = minutes // 60
-        minutes = minutes - hours * 60
-    else:
-        hours = 0
-    microseconds = delta.microseconds
-    return {'days': days, 'hours': hours, 'minutes': minutes, 'seconds': seconds, 'microseconds': microseconds}
+    return seconds
 
 
 def set_server_time():
@@ -97,10 +85,10 @@ class Alarm:
         """ возвращает текущее состояние будильника (bool)"""
         return self.tracked
 
-    def check(self, hours, minutes):
+    def check(self):
         """ проверяет, пора ли звонить. Возвращает True, если самое время (bool) """
-        local_hours = hours
-        local_minutes = minutes
+        local_hours = get_local_time()['hours']
+        local_minutes = get_local_time()['minutes']
         if local_hours == self.hours and local_minutes == local_minutes:
             return True
         else:
