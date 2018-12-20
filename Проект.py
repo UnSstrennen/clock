@@ -6,7 +6,6 @@ from PyQt5.QtCore import Qt, QTimer
 from math import fabs
 from time import sleep, time
 
-
 from functions import ServerTime, get_local_time
 
 
@@ -16,11 +15,13 @@ class Example(QMainWindow):
         self.tmr = QTimer()
         self.tmr.timeout.connect(self.on_timer)
         self.initUI()
-        
+
     def initUI(self):
         self.color_frame = (0, 0, 0)
         self.old_pos = None
         self.text = ['00', '00']
+        self.status = False
+        self.h_m_list = [None, None]
 
         # Генерация окна
         self.setWindowTitle('Clock')
@@ -61,13 +62,21 @@ class Example(QMainWindow):
         self.alarm.move(204, 39)
         self.alarm.show()
 
+        # Кнопка включения будильника
+        self.alVKL = QPushButton('Включить', self, clicked=self.alarm_status)
+        self.alVKL.resize(65, 20)
+        self.alVKL.setObjectName('a')
+        self.alVKL.setStyleSheet("#a {background-color: white; border-radius: 2px;}")
+        self.alVKL.move(98, 110)
+
         # Дисплей для будильника
         self.lcdA = QLCDNumber(self)
         self.lcdA.resize(150, 75)
         self.lcdA.move(55, 30)
         self.lcdA.setSegmentStyle(QLCDNumber.Flat)
         self.lcdA.setObjectName("LCDA")
-        self.lcdA.setStyleSheet("#LCDA {background-image: url(фон.png); border: 2px solid #4c4c4c;}")
+        self.lcdA.setStyleSheet(
+            "#LCDA {background-image: url(фон.png); border: 2px solid #4c4c4c;}")
         self.lcdA.display(':'.join(self.text))
 
         # Слайдер выбора часа
@@ -115,9 +124,9 @@ class Example(QMainWindow):
             self.sldH.hide()
             self.sldM.hide()
             self.lcdA.hide()
+            self.alVKL.hide()
         except AttributeError:
             pass
-
 
     # Сцена настроек
     def settings(self):
@@ -129,6 +138,7 @@ class Example(QMainWindow):
         self.sldH.hide()
         self.sldM.hide()
         self.lcdA.hide()
+        self.alVKL.hide()
 
     def alarm_st(self):
         self.btn_gn.show()
@@ -138,6 +148,7 @@ class Example(QMainWindow):
         self.sldH.show()
         self.sldM.show()
         self.lcdA.show()
+        self.alVKL.show()
 
     # Изменение фона окна
     def palette(self):
@@ -188,16 +199,27 @@ class Example(QMainWindow):
             n = '0' + str(n)
         self.text[0] = str(n)
         self.lcdA.display(':'.join(self.text))
+        self.h_m_list[0] = n
 
     def slider2(self, n):
         if len(str(n)) == 1:
             n = '0' + str(n)
         self.text[1] = str(n)
         self.lcdA.display(':'.join(self.text))
+        self.h_m_list[1] = n
 
     def on_timer(self):
         """ timer handler """
         self.lcd.display(make_time_for_lcd())
+
+    def alarm_status(self):
+        if not self.status:
+            self.status = True
+            self.alVKL.setText('Выключить')
+        elif self.status:
+            self.status = False
+            self.alVKL.setText('Включить')
+            self.h_m_list = [None, None]
 
 
 def make_time_for_lcd():
