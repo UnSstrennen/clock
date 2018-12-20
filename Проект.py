@@ -211,6 +211,15 @@ class Example(QMainWindow):
         """ changes alarm status """
         self.alarm.tracked = not self.alarm.tracked
 
+    def alarm_status(self):
+        if not self.status:
+            self.status = True
+            self.alVKL.setText('Выключить')
+        elif self.status:
+            self.status = False
+            self.alVKL.setText('Включить')
+            self.h_m_list = [None, None]
+
 
 def make_time_for_lcd():
     """ makes the time data compatible for lcd widget """
