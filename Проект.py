@@ -121,6 +121,11 @@ class Example(QMainWindow):
         self.alVKL.setStyleSheet("#a {background-color: white; border-radius: 2px;}")
         self.alVKL.move(98, 110)
 
+        # Синхронизация системного времени
+        self.sinT= QPushButton('Синхронизация\nсистемного\nвремени', self, clicked=self.alarm_status)
+        self.sinT.resize(90, 50)
+        self.sinT.move(120, 28)
+
         # Дисплей для будильника
         self.lcdA = QLCDNumber(self)
         self.lcdA.resize(150, 75)
@@ -177,6 +182,7 @@ class Example(QMainWindow):
             self.sldM.hide()
             self.lcdA.hide()
             self.alVKL.hide()
+            self.sinT.hide()
         except AttributeError:
             pass
 
@@ -191,6 +197,7 @@ class Example(QMainWindow):
         self.sldM.hide()
         self.lcdA.hide()
         self.alVKL.hide()
+        self.sinT.show()
 
     def alarm_st(self):
         self.btn_gn.show()
@@ -201,6 +208,7 @@ class Example(QMainWindow):
         self.sldM.show()
         self.lcdA.show()
         self.alVKL.show()
+        self.sinT.hide()
 
     # Изменение фона окна
     def palette(self):
@@ -308,4 +316,3 @@ if __name__ == '__main__':
     w.show()
 
     sys.exit(app.exec_())
-
