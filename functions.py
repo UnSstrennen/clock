@@ -68,14 +68,14 @@ def set_server_time():
     """ установка серверного времени """
     # запрашиваем права админа чтобы выставить время
     t = ServerTime().time_obj
-    print(t)
     ASADMIN = 'asadmin'
     if argv[-1] != ASADMIN:
         script = path.abspath(argv[0])
         params = ' '.join([script] + argv[1:] + [ASADMIN])
         shell.ShellExecuteEx(lpVerb='runas', lpFile=executable, lpParameters=params)
         sysexit(0)
-    SetSystemTime(t[0], t[1], t[6], t[2], t[3], t[4], t[5], 0)
+    TIMEZONE = 3
+    SetSystemTime(t[0], t[1], t[6], t[2], t[3] - TIMEZONE, t[4], t[5], 0)
 
 
 class Alarm:
@@ -126,7 +126,3 @@ class Alarm:
     def stop_sound(self):
         """ остановка звонка будильника """
         check_call("TASKKILL /F /PID {pid} /T".format(pid=self.process.pid))
-
-
-set_server_time()
-print('Мы еще живы!')
