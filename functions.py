@@ -97,10 +97,10 @@ class Alarm:
         """ возвращает текущее состояние будильника (bool)"""
         return self.tracked
 
-    def check(self):
+    def check(self, hours, minutes):
         """ проверяет, пора ли звонить. Возвращает True, если самое время (bool) """
-        local_hours = get_local_time()['hours']
-        local_minutes = get_local_time()['minutes']
+        local_hours = hours
+        local_minutes = minutes
         if local_hours == self.hours and local_minutes == local_minutes:
             return True
         else:

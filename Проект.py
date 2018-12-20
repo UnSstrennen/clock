@@ -4,19 +4,21 @@ from PyQt5.QtWidgets import (QApplication, QPushButton, QColorDialog,
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, QTimer
 from math import fabs
-from time import sleep, time
 
 
-from functions import ServerTime, get_local_time
+from functions import ServerTime, get_local_time, Alarm
 
 
 class Example(QMainWindow):
     def __init__(self):
         super(Example, self).__init__()
-        self.tmr = QTimer()
-        self.tmr.timeout.connect(self.on_timer)
+
+        self.check_time_timer = QTimer()
+        self.check_time_timer.timeout.connect(self.check_time)
+
+        self.alarm = Alarm(0, 0)  #alarm exemplar
         self.initUI()
-        
+
     def initUI(self):
         self.color_frame = (0, 0, 0)
         self.old_pos = None
@@ -195,9 +197,19 @@ class Example(QMainWindow):
         self.text[1] = str(n)
         self.lcdA.display(':'.join(self.text))
 
-    def on_timer(self):
-        """ timer handler """
-        self.lcd.display(make_time_for_lcd())
+    def check_time(self):
+        """ compares the time by the timer command """
+        if 'lcd' in dir(self):
+            self.lcd.display(make_time_for_lcd())
+        self.check_alarm()
+
+    def check_alarm(self):
+        """ alarm handler called by timer """
+        print(1)
+
+    def change_alarm_status(self):
+        """ changes alarm status """
+        self.alarm.tracked = not self.alarm.tracked
 
 
 def make_time_for_lcd():
@@ -217,8 +229,8 @@ if __name__ == '__main__':
 
     w = Example()
 
-    TIMER_PERIOD = 20  # period in milliseconds
-    w.tmr.start(TIMER_PERIOD)
+    TIME_TIMER_PERIOD = 1000  # period in milliseconds
+    w.check_time_timer.start(TIME_TIMER_PERIOD)
     w.show()
 
     sys.exit(app.exec_())
