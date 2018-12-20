@@ -6,6 +6,9 @@ from PyQt5.QtCore import Qt
 from math import fabs
 
 
+from functions import ServerTime, get_local_time
+
+
 class Example(QMainWindow):
     def __init__(self):
         super(Example, self).__init__()
@@ -81,7 +84,14 @@ class Example(QMainWindow):
         self.lcd.resize(150, 75)
         self.lcd.setSegmentStyle(QLCDNumber.Flat)
         self.lcd.move(55, 40)
-        self.lcd.display('07:00')
+        time = get_local_time()
+        hours = str(time['hours'])
+        minutes = str(time['minutes'])
+        if len(hours) == 1:
+            hours = '0' + hours
+        if len(minutes) == 1:
+            minutes = '0' + minutes
+        self.lcd.display(hours + ':' + minutes)
         self.lcd.setObjectName("LCD")
         self.lcd.setStyleSheet("#LCD {background-image: url(фон.png); border: 2px solid #4c4c4c;}")
 
