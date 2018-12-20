@@ -352,8 +352,6 @@ class Example(QMainWindow):
         if self.status:
             t = self.h_m_list
             if True:
-                print([get_local_time()['hours'], t[0], get_local_time()['minutes'], t[1]])
-                print('ell')
                 self.alarm_class.start_sound()
                 self.good_morning()
 
