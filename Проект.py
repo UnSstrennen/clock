@@ -55,16 +55,16 @@ def set_server_time():
 
 class Alarm:
     def __init__(self, hours, minutes):
-        self.minutes = minutes
-        self.hours = hours
+        self.min = minutes
+        self.ho = hours
         self.tracked = False
         self.track = 0  # индекс мелодии
         self.process = None  # будущий процесс обработки звука
 
     def set(self, hours, minutes):
         """ изменение настроек будильника """
-        self.minutes = minutes
-        self.hours = hours
+        self.min = minutes
+        self.ho = hours
 
     def start(self):
         """ запуск будильника """
@@ -82,7 +82,7 @@ class Alarm:
         """ проверяет, пора ли звонить. Возвращает True, если самое время (bool) """
         local_hours = hours
         local_minutes = minutes
-        if local_hours == self.hours and local_minutes == self.minutes:
+        if local_hours == self.ho and local_minutes == self.min:
             return True
         else:
             return False
@@ -218,9 +218,9 @@ class Example(QMainWindow):
         # Кнопка отключения будильника
         self.gm = QPushButton('ОТКЛЮЧИТЬ\nБУДИЛЬНИК', self, clicked=self.play_stop)
         self.gm.setObjectName('x')
-        self.gm.setStyleSheet("#x {background-color: white; border-radius: 2px;}")
+        self.gm.setStyleSheet("#x {background-color: rgb(0, 255, 0);}")
         self.gm.resize(90, 50)
-        self.gm.move(120, 28)
+        self.gm.move(85, 55)
 
         self.general()
 
@@ -332,29 +332,31 @@ class Example(QMainWindow):
             self.paintEvent(self)
 
     def slider(self, n):
+        self.h_m_list[0] = n
         if len(str(n)) == 1:
             n = '0' + str(n)
         self.text[0] = str(n)
         self.lcdA.display(':'.join(self.text))
-        self.h_m_list[0] = n
+
 
     def slider2(self, n):
+        self.h_m_list[1] = n
         if len(str(n)) == 1:
             n = '0' + str(n)
         self.text[1] = str(n)
         self.lcdA.display(':'.join(self.text))
-        self.h_m_list[1] = n
 
     def on_timer(self):
         """ timer handler """
         self.lcd.display(make_time_for_lcd())
         if self.status:
-            time = get_local_time()
+            t = self.h_m_list
             if True:
+                print([get_local_time()['hours'], t[0], get_local_time()['minutes'], t[1]])
+                print('ell')
                 self.alarm_class.start_sound()
                 self.good_morning()
 
-    #self.alarm_class.check(time['hours'], time['minutes'])
     def alarm_status(self):
         if not self.status:
             self.status = True
@@ -370,7 +372,6 @@ class Example(QMainWindow):
 
 
 def make_time_for_lcd():
-    """ makes the time data compatible for lcd widget """
     time = get_local_time()
     hours = str(time['hours'])
     minutes = str(time['minutes'])
