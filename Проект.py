@@ -196,7 +196,7 @@ class Example(QMainWindow):
         self.lcdA.display(':'.join(self.text))
 
     def on_timer(self):
-        """ it happpens when timer calls it """
+        """ timer handler """
         self.lcd.display(make_time_for_lcd())
 
 
