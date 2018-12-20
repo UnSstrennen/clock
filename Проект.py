@@ -262,6 +262,8 @@ class Example(QMainWindow):
         self.lcd.hide()
         self.sldH.show()
         self.sldM.show()
+        self.sldH.setValue(1)
+        self.sldM.setValue(42)
         self.lcdA.show()
         self.alVKL.show()
         self.sinT.hide()
@@ -348,10 +350,11 @@ class Example(QMainWindow):
         self.lcd.display(make_time_for_lcd())
         if self.status:
             time = get_local_time()
-            if self.alarm_class .check(time['hours'], time['minutes']):
+            if True:
                 self.alarm_class.start_sound()
                 self.good_morning()
 
+    #self.alarm_class.check(time['hours'], time['minutes'])
     def alarm_status(self):
         if not self.status:
             self.status = True
