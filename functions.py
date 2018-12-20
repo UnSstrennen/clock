@@ -1,11 +1,6 @@
-import win32com.shell.shell as shell
 from ntplib import NTPClient
 from datetime import datetime
 from time import ctime, localtime, mktime
-from win32api import SetSystemTime
-from os import startfile, path
-from sys import argv, executable
-from sys import exit as sysexit
 from subprocess import Popen, PIPE, check_call
 
 
@@ -16,6 +11,7 @@ class ServerTime:
         self.client = NTPClient()
         self.time_obj = None
         self.get_time()
+        self.TIMEZONE = 3
 
     def print_time(self):
         """ prints the server time """
@@ -27,7 +23,7 @@ class ServerTime:
                 self.time_obj = localtime(self.client.request(host).tx_time)
                 if bool(self.time_obj):
                     return {'day': self.time_obj[2], 'month': self.time_obj[1], 'year': self.time_obj[0],
-                            'hours': self.time_obj[3], 'minutes': self.time_obj[4], 'seconds': self.time_obj[5],
+                            'hours': self.time_obj[3] - self.TIMEZONE, 'minutes': self.time_obj[4], 'seconds': self.time_obj[5],
                             'day of week': self.time_obj[6]}
             except Exception:
                 pass
@@ -66,16 +62,13 @@ def count_delta():
 
 def set_server_time():
     """ установка серверного времени """
-    # запрашиваем права админа чтобы выставить время
-    t = ServerTime().time_obj
-    ASADMIN = 'asadmin'
-    if argv[-1] != ASADMIN:
-        script = path.abspath(argv[0])
-        params = ' '.join([script] + argv[1:] + [ASADMIN])
-        shell.ShellExecuteEx(lpVerb='runas', lpFile=executable, lpParameters=params)
-        sysexit(0)
-    TIMEZONE = 3
-    SetSystemTime(t[0], t[1], t[6], t[2], t[3] - TIMEZONE, t[4], t[5], 0)
+    t = ServerTime().get_time()
+    args_to_send = [t['year'], t['month'], t['day of week'], t['day'], t['hours'], t['minutes'],
+                    t['seconds'], 0]
+    with open('time.txt', 'w') as file:
+        file.write(str(args_to_send)[1:-1])
+    process = Popen('python system_time_setting.py', stdout=PIPE, shell=True)
+
 
 
 class Alarm:
@@ -126,3 +119,6 @@ class Alarm:
     def stop_sound(self):
         """ остановка звонка будильника """
         check_call("TASKKILL /F /PID {pid} /T".format(pid=self.process.pid))
+
+
+set_server_time()

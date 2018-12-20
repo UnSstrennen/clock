@@ -22,4 +22,4 @@ if DEBUG:
     my_file = open("some.txt", "w")
     my_file.write(t)
     my_file.close()
-SetSystemTime(t[0], t[1], t[6], t[2], t[3], t[4], t[5], 0)
+SetSystemTime(t[0], t[1], t[2], t[3], t[4], t[5], t[6], 0)
