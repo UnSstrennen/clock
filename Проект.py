@@ -263,6 +263,13 @@ class Example(QMainWindow):
     def on_timer(self):
         """ timer handler """
         self.lcd.display(make_time_for_lcd())
+        if self.status:
+            time = get_local_time()
+            if self.alarm_class.check(time['hours'], time['minutes']):
+                self.alarm_class.start_sound()
+                # тут ждем пока не нажмут кнопку
+                # тут заканчиваем звук
+                self.alarm_class.stop_sound()
 
     def alarm_status(self):
         if not self.status:
