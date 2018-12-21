@@ -351,7 +351,6 @@ class Example(QMainWindow):
         self.lcd.display(make_time_for_lcd())
         if self.status:
             t = get_local_time()
-            print(self.h_m_list)
             if t['hours'] == self.h_m_list[0] and t['minutes'] == self.h_m_list[1]:
                 self.alarm_class.start_sound()
                 self.good_morning()
