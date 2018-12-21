@@ -320,8 +320,7 @@ class Example(QMainWindow):
             time = get_local_time()
             if self.alarm_class.check(time['hours'], time['minutes']):
                 self.alarm_class.start_sound()
-                # тут ждем пока не нажмут кнопку
-                # тут заканчиваем звук
+                self.good_morning()
                 self.alarm_class.stop_sound()
                 self.alarm_status()
 
