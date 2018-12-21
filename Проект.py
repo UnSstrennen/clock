@@ -211,7 +211,7 @@ class Example(QMainWindow):
         self.combo.setObjectName('Combo')
         self.combo.resize(75, 20)
         self.combo.addItems(["Stylization", "Color", "Olds",
-                             "Matrix", "Sofa", "Low Poly", "Anime", "Pony"])
+                             "Matrix", "Sofa", "Low Poly", "Anime", "Pony", "Савок"])
         self.combo.activated[str].connect(self.onActivated)
         self.combo.move(30, 30)
 
@@ -322,7 +322,7 @@ class Example(QMainWindow):
     def onActivated(self, val):
         backgrounds = {'Stylization': '#272727', 'Olds': 'olds.png', 'Matrix': 'matrix.png',
                        'Sofa': 'диван.jpg', 'Low Poly': 'bg.png', "Anime": 'anime.jpg',
-                       "Pony": 'pony.jpg'}
+                       "Pony": 'pony.jpg', "Савок": 'фоник.png'}
         if val == 'Color':
             self.palette()
         elif val == 'Stylization':
