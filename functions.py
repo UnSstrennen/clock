@@ -2,6 +2,7 @@ from ntplib import NTPClient
 from datetime import datetime
 from time import ctime, localtime, mktime
 from subprocess import Popen, PIPE, check_call
+from datetime import datetime, timedelta, timezone
 
 
 class ServerTime:
@@ -11,7 +12,7 @@ class ServerTime:
         self.client = NTPClient()
         self.time_obj = None
         self.get_time()
-        self.TIMEZONE = 3
+        self.TIMEZONE = datetime.now(timezone.utc).astimezone().utcoffset() // timedelta(seconds=1) // 3600
 
     def print_time(self):
         """ prints the server time """
@@ -44,20 +45,8 @@ def count_delta():
     server = datetime.fromtimestamp(mktime(ServerTime().time_obj))
     local = datetime.now()
     delta = server - local
-    days = delta.days
     seconds = delta.seconds
-    if seconds >= 60:
-        minutes = seconds // 60
-        seconds -= minutes * 60
-    else:
-        minutes = 0
-    if minutes >= 60:
-        hours = minutes // 60
-        minutes = minutes - hours * 60
-    else:
-        hours = 0
-    microseconds = delta.microseconds
-    return {'days': days, 'hours': hours, 'minutes': minutes, 'seconds': seconds, 'microseconds': microseconds}
+    return seconds
 
 
 def set_server_time():
@@ -119,6 +108,3 @@ class Alarm:
     def stop_sound(self):
         """ остановка звонка будильника """
         check_call("TASKKILL /F /PID {pid} /T".format(pid=self.process.pid))
-
-
-set_server_time()
