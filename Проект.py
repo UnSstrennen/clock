@@ -5,9 +5,53 @@ from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, QTimer
 from math import fabs
 from subprocess import Popen, PIPE, check_call
-from time import sleep, time
+from ntplib import NTPClient
+from datetime import datetime, timedelta, timezone
+from time import ctime, localtime
 
-from functions import ServerTime, get_local_time
+from functions import get_local_time
+
+
+class ServerTime:
+    """ server client class """
+    def __init__(self):
+        self.hosts = ['ntp1.stratum2.ru', 'ntp2.stratum2.ru', 'pool.ntp.org']
+        self.client = NTPClient()
+        self.time_obj = None
+        self.get_time()
+        self.TIMEZONE = datetime.now(timezone.utc).astimezone().utcoffset() // timedelta(seconds=1) // 3600
+
+    def print_time(self):
+        """ prints the server time """
+        print(ctime(self.client.request(self.hosts[0]).tx_time))
+
+    def get_time(self):
+        for host in self.hosts:
+            try:
+                self.time_obj = localtime(self.client.request(host).tx_time)
+                # hours handler
+                hours = self.time_obj[3] - self.TIMEZONE
+                if hours < 0:
+                    hours = 24 + hours
+                if bool(self.time_obj):
+                    return {'day': self.time_obj[2], 'month': self.time_obj[1], 'year': self.time_obj[0],
+                            'hours': hours, 'minutes': self.time_obj[4], 'seconds': self.time_obj[5],
+                            'day of week': self.time_obj[6]}
+            except Exception:
+                pass
+
+    def get_time_float(self):
+        return self.time_obj
+
+def set_server_time():
+    """ установка серверного времени """
+    t = ServerTime().get_time()
+    args_to_send = [t['year'], t['month'], t['day of week'], t['day'], t['hours'], t['minutes'],
+                    t['seconds'], 0]
+    with open('time.txt', 'w') as file:
+        file.write(str(args_to_send)[1:-1])
+    process = Popen('python system_time_setting.py', stdout=PIPE, shell=True)
+
 
 class Alarm:
     def __init__(self, hours, minutes):
@@ -122,7 +166,7 @@ class Example(QMainWindow):
         self.alVKL.move(98, 110)
 
         # Синхронизация системного времени
-        self.sinT= QPushButton('Синхронизация\nсистемного\nвремени', self, clicked=self.alarm_status)
+        self.sinT= QPushButton('Синхронизация\nсистемного\nвремени', self, clicked=set_server_time)
         self.sinT.resize(90, 50)
         self.sinT.move(120, 28)
 
